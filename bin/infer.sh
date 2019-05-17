@@ -22,7 +22,7 @@ do
     # print number of subjects
     if [ $dataset = seq1 ]
     then
-        num_ids=118
+        num_ids=114
     elif [ $dataset = seq2 ]
     then
         num_ids=88
