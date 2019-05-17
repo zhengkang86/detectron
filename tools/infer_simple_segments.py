@@ -192,20 +192,22 @@ def main(args):
         # )
 
         # debug:
+        mask_out = np.ones(im.shape[0:2])
         boxes, segms, keyps, classes = convert_from_cls_format(cls_boxes, cls_segms, cls_keyps)
-        masks = mask_util.decode(segms)
-        scores = boxes[:, 4]
 
-        mask_out = np.ones(masks.shape[0:2])
-        max_idx, max_score = 0, 0.0
-        for i in range(len(scores)):
-            if classes[i] == 1 and scores[i] > max_score and scores[i] > args.thresh:
-                mask_out = masks[:, :, i]
-        mask_name = os.path.join(
-            args.output_dir, '{}'.format(os.path.basename(im_name))
-        )
+        if not segms:
+            print('Nothing detected!')
+        else:
+            masks = mask_util.decode(segms)
+            scores = boxes[:, 4]
+            max_score = 0.0
+            for i in range(len(scores)):
+                if classes[i] == 1 and scores[i] > max_score and scores[i] > args.thresh:
+                    mask_out = masks[:, :, i]
+
         mask_out = (mask_out * 255.0).astype(np.uint8)
         mask = Image.fromarray(mask_out)
+        mask_name = os.path.join(args.output_dir, '{}'.format(os.path.basename(im_name)))
         mask.save(mask_name)
 
         # pdb.set_trace()
